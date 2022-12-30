@@ -8,7 +8,7 @@ import (
 
 // x/lottery module sentinel errors
 var (
-	ErrInsufficientFee = sdkerrors.Register(ModuleName, 10001, "Insufficient Fee")
+	ErrInsufficientFee     = sdkerrors.Register(ModuleName, 10001, "Insufficient Fee")
 	ErrInsufficientBetSize = sdkerrors.Register(ModuleName, 10002, "Insufficient Bet Size")
-	ErrCounterNotFound = sdkerrors.Register(ModuleName, 10003, "Counter not found")
+	ErrCounterNotFound     = sdkerrors.Register(ModuleName, 10003, "Counter not found")
 )

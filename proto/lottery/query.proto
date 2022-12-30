@@ -6,6 +6,7 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "lottery/params.proto";
 import "lottery/tx_counter.proto";
+import "lottery/user.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/mastervectormaster/lottery/x/lottery/types";
@@ -20,6 +21,16 @@ service Query {
 	rpc TxCounter(QueryGetTxCounterRequest) returns (QueryGetTxCounterResponse) {
 		option (google.api.http).get = "/mastervectormaster/lottery/lottery/tx_counter";
 	}
+// Queries a User by id.
+	rpc User(QueryGetUserRequest) returns (QueryGetUserResponse) {
+		option (google.api.http).get = "/mastervectormaster/lottery/lottery/user/{id}";
+	}
+
+	// Queries a list of User items.
+	rpc UserAll(QueryAllUserRequest) returns (QueryAllUserResponse) {
+		option (google.api.http).get = "/mastervectormaster/lottery/lottery/user";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -37,4 +48,21 @@ message QueryGetTxCounterRequest {}
 message QueryGetTxCounterResponse {
 	TxCounter TxCounter = 1 [(gogoproto.nullable) = false];
 }
+message QueryGetUserRequest {
+	uint64 id = 1;
+}
+
+message QueryGetUserResponse {
+	User User = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllUserRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllUserResponse {
+	repeated User User = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
 // this line is used by starport scaffolding # 3

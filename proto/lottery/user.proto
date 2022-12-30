@@ -1,0 +1,10 @@
+syntax = "proto3";
+package mastervectormaster.lottery.lottery;
+
+option go_package = "github.com/mastervectormaster/lottery/x/lottery/types";
+
+message User {
+  uint64 id = 1;
+  string user = 2; 
+  
+}

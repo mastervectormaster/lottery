@@ -4,6 +4,7 @@ package mastervectormaster.lottery.lottery;
 import "gogoproto/gogo.proto";
 import "lottery/params.proto";
 import "lottery/tx_counter.proto";
+import "lottery/user.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/mastervectormaster/lottery/x/lottery/types";
@@ -12,5 +13,7 @@ option go_package = "github.com/mastervectormaster/lottery/x/lottery/types";
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   TxCounter txCounter = 2;
+  repeated User userList = 3 [(gogoproto.nullable) = false];
+  uint64 userCount = 4;
   // this line is used by starport scaffolding # genesis/proto/state
 }

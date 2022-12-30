@@ -25,9 +25,44 @@ func TestGenesisState_Validate(t *testing.T) {
 				TxCounter: &types.TxCounter{
 					Counter: "28",
 				},
+				UserList: []types.User{
+					{
+						Id: 0,
+					},
+					{
+						Id: 1,
+					},
+				},
+				UserCount: 2,
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
+		},
+		{
+			desc: "duplicated user",
+			genState: &types.GenesisState{
+				UserList: []types.User{
+					{
+						Id: 0,
+					},
+					{
+						Id: 0,
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "invalid user count",
+			genState: &types.GenesisState{
+				UserList: []types.User{
+					{
+						Id: 1,
+					},
+				},
+				UserCount: 0,
+			},
+			valid: false,
 		},
 		// this line is used by starport scaffolding # types/genesis/testcase
 	} {
