@@ -49,20 +49,17 @@ func (k Keeper) AppendUser(
 		}
 	}
 
-	if found {
-		return count
+	if !found {
+		// Set the ID of the appended value
+		user.Id = count
+
+		store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UserKey))
+		appendedValue := k.cdc.MustMarshal(&user)
+		store.Set(GetUserIDBytes(user.Id), appendedValue)
+
+		// Update user count
+		k.SetUserCount(ctx, count+1)
 	}
-
-	// Set the ID of the appended value
-	user.Id = count
-
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UserKey))
-	appendedValue := k.cdc.MustMarshal(&user)
-	store.Set(GetUserIDBytes(user.Id), appendedValue)
-
-	// Update user count
-	k.SetUserCount(ctx, count+1)
-
 	return count
 }
 
