@@ -1,9 +1,12 @@
 syntax = "proto3";
 package mastervectormaster.lottery.lottery;
+import "gogoproto/gogo.proto";  
 
 option go_package = "github.com/mastervectormaster/lottery/x/lottery/types";
 
 message TxCounter {
-  string counter = 1; 
-  
+  string counter = 1 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ]; 
 }

@@ -23,7 +23,9 @@ const (
 )
 
 const (
-	TxCount = 10 
+	TxCount = 10
+	RequiredFee = "5token"
+	MinBetSize = "1token"
 )
 
 func SetBech32Prefixes(config *sdk.Config) {
