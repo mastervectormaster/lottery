@@ -39,7 +39,7 @@ func (k Keeper) AppendUser(
 	user types.User,
 ) uint64 {
 	count := k.GetUserCount(ctx)
-	
+
 	allUsers := k.GetAllUser(ctx)
 	found := false
 	for _, _user := range allUsers {
@@ -50,7 +50,7 @@ func (k Keeper) AppendUser(
 	}
 
 	if found {
-		return count;
+		return count
 	}
 
 	// Set the ID of the appended value
@@ -91,10 +91,11 @@ func (k Keeper) RemoveUser(ctx sdk.Context, id uint64) {
 }
 
 // RemoveAllUser empty out the store
-func (k Keeper) RemoveAllUser(ctx sdk.Context) {
+func (k Keeper) RemoveAllUserWithBet(ctx sdk.Context) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UserKey))
 	allUsers := k.GetAllUser(ctx)
 	for _, user := range allUsers {
+		k.RemoveBet(ctx, user.User)
 		store.Delete(GetUserIDBytes(user.Id))
 	}
 	k.SetUserCount(ctx, 0)

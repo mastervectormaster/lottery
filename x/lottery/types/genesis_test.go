@@ -34,6 +34,14 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				UserCount: 2,
+				BetList: []types.Bet{
+					{
+						Index: "0",
+					},
+					{
+						Index: "1",
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -61,6 +69,20 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				UserCount: 0,
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated bet",
+			genState: &types.GenesisState{
+				BetList: []types.Bet{
+					{
+						Index: "0",
+					},
+					{
+						Index: "0",
+					},
+				},
 			},
 			valid: false,
 		},

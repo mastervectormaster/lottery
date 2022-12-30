@@ -9,12 +9,33 @@
  * ---------------------------------------------------------------
  */
 
+export interface LotteryBet {
+  index?: string;
+  user?: string;
+  data?: string;
+}
+
 export type LotteryMsgEnterLotteryResponse = object;
 
 /**
  * Params defines the parameters for the module.
  */
 export type LotteryParams = object;
+
+export interface LotteryQueryAllBetResponse {
+  bet?: LotteryBet[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
 
 export interface LotteryQueryAllUserResponse {
   User?: LotteryUser[];
@@ -29,6 +50,10 @@ export interface LotteryQueryAllUserResponse {
    *  }
    */
   pagination?: V1Beta1PageResponse;
+}
+
+export interface LotteryQueryGetBetResponse {
+  bet?: LotteryBet;
 }
 
 export interface LotteryQueryGetTxCounterResponse {
@@ -323,10 +348,52 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title lottery/genesis.proto
+ * @title lottery/bet.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryBetAll
+   * @summary Queries a list of Bet items.
+   * @request GET:/mastervectormaster/lottery/lottery/bet
+   */
+  queryBetAll = (
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<LotteryQueryAllBetResponse, RpcStatus>({
+      path: `/mastervectormaster/lottery/lottery/bet`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryBet
+   * @summary Queries a Bet by index.
+   * @request GET:/mastervectormaster/lottery/lottery/bet/{index}
+   */
+  queryBet = (index: string, params: RequestParams = {}) =>
+    this.request<LotteryQueryGetBetResponse, RpcStatus>({
+      path: `/mastervectormaster/lottery/lottery/bet/${index}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
   /**
    * No description
    *

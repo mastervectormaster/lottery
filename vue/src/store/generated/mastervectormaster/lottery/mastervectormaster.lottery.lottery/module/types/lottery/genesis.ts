@@ -4,6 +4,7 @@ import { util, configure, Writer, Reader } from "protobufjs/minimal";
 import { Params } from "../lottery/params";
 import { TxCounter } from "../lottery/tx_counter";
 import { User } from "../lottery/user";
+import { Bet } from "../lottery/bet";
 
 export const protobufPackage = "mastervectormaster.lottery.lottery";
 
@@ -12,8 +13,9 @@ export interface GenesisState {
   params: Params | undefined;
   txCounter: TxCounter | undefined;
   userList: User[];
-  /** this line is used by starport scaffolding # genesis/proto/state */
   userCount: number;
+  /** this line is used by starport scaffolding # genesis/proto/state */
+  betList: Bet[];
 }
 
 const baseGenesisState: object = { userCount: 0 };
@@ -32,6 +34,9 @@ export const GenesisState = {
     if (message.userCount !== 0) {
       writer.uint32(32).uint64(message.userCount);
     }
+    for (const v of message.betList) {
+      Bet.encode(v!, writer.uint32(42).fork()).ldelim();
+    }
     return writer;
   },
 
@@ -40,6 +45,7 @@ export const GenesisState = {
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseGenesisState } as GenesisState;
     message.userList = [];
+    message.betList = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -55,6 +61,9 @@ export const GenesisState = {
         case 4:
           message.userCount = longToNumber(reader.uint64() as Long);
           break;
+        case 5:
+          message.betList.push(Bet.decode(reader, reader.uint32()));
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -66,6 +75,7 @@ export const GenesisState = {
   fromJSON(object: any): GenesisState {
     const message = { ...baseGenesisState } as GenesisState;
     message.userList = [];
+    message.betList = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromJSON(object.params);
     } else {
@@ -86,6 +96,11 @@ export const GenesisState = {
     } else {
       message.userCount = 0;
     }
+    if (object.betList !== undefined && object.betList !== null) {
+      for (const e of object.betList) {
+        message.betList.push(Bet.fromJSON(e));
+      }
+    }
     return message;
   },
 
@@ -105,12 +120,18 @@ export const GenesisState = {
       obj.userList = [];
     }
     message.userCount !== undefined && (obj.userCount = message.userCount);
+    if (message.betList) {
+      obj.betList = message.betList.map((e) => (e ? Bet.toJSON(e) : undefined));
+    } else {
+      obj.betList = [];
+    }
     return obj;
   },
 
   fromPartial(object: DeepPartial<GenesisState>): GenesisState {
     const message = { ...baseGenesisState } as GenesisState;
     message.userList = [];
+    message.betList = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromPartial(object.params);
     } else {
@@ -130,6 +151,11 @@ export const GenesisState = {
       message.userCount = object.userCount;
     } else {
       message.userCount = 0;
+    }
+    if (object.betList !== undefined && object.betList !== null) {
+      for (const e of object.betList) {
+        message.betList.push(Bet.fromPartial(e));
+      }
     }
     return message;
   },

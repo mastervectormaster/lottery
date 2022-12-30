@@ -5,6 +5,7 @@ import "gogoproto/gogo.proto";
 import "lottery/params.proto";
 import "lottery/tx_counter.proto";
 import "lottery/user.proto";
+import "lottery/bet.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/mastervectormaster/lottery/x/lottery/types";
@@ -15,5 +16,6 @@ message GenesisState {
   TxCounter txCounter = 2;
   repeated User userList = 3 [(gogoproto.nullable) = false];
   uint64 userCount = 4;
+  repeated Bet betList = 5 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 }

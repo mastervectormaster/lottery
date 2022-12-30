@@ -1,0 +1,12 @@
+syntax = "proto3";
+package mastervectormaster.lottery.lottery;
+
+option go_package = "github.com/mastervectormaster/lottery/x/lottery/types";
+
+message Bet {
+  string index = 1; 
+  string user = 2; 
+  string data = 3; 
+  
+}
+

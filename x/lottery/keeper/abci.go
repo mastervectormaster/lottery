@@ -10,11 +10,14 @@ import (
 // and finish the lottery if the condition is met
 func (k Keeper) EndBlocker(ctx sdk.Context) {
 	counter, found := k.GetTxCounter(ctx)
-
+	
 	// if counter is GTE 10, reset to 0
 	if found && counter.Counter.GTE(sdk.NewInt(constants.TxCount)) {
-		k.SetTxCounter(ctx, types.TxCounter{Counter: sdk.NewInt(0)})
-		k.RemoveAllUser(ctx)
 		// TODO: Payout
+		k.Payout(ctx)
+
+		// Reset
+		k.SetTxCounter(ctx, types.TxCounter{Counter: sdk.NewInt(0)})
+		k.RemoveAllUserWithBet(ctx)
 	}
 }
