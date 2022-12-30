@@ -3,6 +3,7 @@ package mastervectormaster.lottery.lottery;
 
 import "gogoproto/gogo.proto";
 import "lottery/params.proto";
+import "lottery/tx_counter.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/mastervectormaster/lottery/x/lottery/types";
@@ -10,5 +11,6 @@ option go_package = "github.com/mastervectormaster/lottery/x/lottery/types";
 // GenesisState defines the lottery module's genesis state.
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
+  TxCounter txCounter = 2;
   // this line is used by starport scaffolding # genesis/proto/state
 }

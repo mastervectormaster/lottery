@@ -1,6 +1,7 @@
 /* eslint-disable */
 import { Reader, Writer } from "protobufjs/minimal";
 import { Params } from "../lottery/params";
+import { TxCounter } from "../lottery/tx_counter";
 
 export const protobufPackage = "mastervectormaster.lottery.lottery";
 
@@ -11,6 +12,12 @@ export interface QueryParamsRequest {}
 export interface QueryParamsResponse {
   /** params holds all the parameters of this module. */
   params: Params | undefined;
+}
+
+export interface QueryGetTxCounterRequest {}
+
+export interface QueryGetTxCounterResponse {
+  TxCounter: TxCounter | undefined;
 }
 
 const baseQueryParamsRequest: object = {};
@@ -110,10 +117,138 @@ export const QueryParamsResponse = {
   },
 };
 
+const baseQueryGetTxCounterRequest: object = {};
+
+export const QueryGetTxCounterRequest = {
+  encode(
+    _: QueryGetTxCounterRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryGetTxCounterRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryGetTxCounterRequest,
+    } as QueryGetTxCounterRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): QueryGetTxCounterRequest {
+    const message = {
+      ...baseQueryGetTxCounterRequest,
+    } as QueryGetTxCounterRequest;
+    return message;
+  },
+
+  toJSON(_: QueryGetTxCounterRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(
+    _: DeepPartial<QueryGetTxCounterRequest>
+  ): QueryGetTxCounterRequest {
+    const message = {
+      ...baseQueryGetTxCounterRequest,
+    } as QueryGetTxCounterRequest;
+    return message;
+  },
+};
+
+const baseQueryGetTxCounterResponse: object = {};
+
+export const QueryGetTxCounterResponse = {
+  encode(
+    message: QueryGetTxCounterResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.TxCounter !== undefined) {
+      TxCounter.encode(message.TxCounter, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryGetTxCounterResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryGetTxCounterResponse,
+    } as QueryGetTxCounterResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.TxCounter = TxCounter.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryGetTxCounterResponse {
+    const message = {
+      ...baseQueryGetTxCounterResponse,
+    } as QueryGetTxCounterResponse;
+    if (object.TxCounter !== undefined && object.TxCounter !== null) {
+      message.TxCounter = TxCounter.fromJSON(object.TxCounter);
+    } else {
+      message.TxCounter = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryGetTxCounterResponse): unknown {
+    const obj: any = {};
+    message.TxCounter !== undefined &&
+      (obj.TxCounter = message.TxCounter
+        ? TxCounter.toJSON(message.TxCounter)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryGetTxCounterResponse>
+  ): QueryGetTxCounterResponse {
+    const message = {
+      ...baseQueryGetTxCounterResponse,
+    } as QueryGetTxCounterResponse;
+    if (object.TxCounter !== undefined && object.TxCounter !== null) {
+      message.TxCounter = TxCounter.fromPartial(object.TxCounter);
+    } else {
+      message.TxCounter = undefined;
+    }
+    return message;
+  },
+};
+
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Parameters queries the parameters of the module. */
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
+  /** Queries a TxCounter by index. */
+  TxCounter(
+    request: QueryGetTxCounterRequest
+  ): Promise<QueryGetTxCounterResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -129,6 +264,20 @@ export class QueryClientImpl implements Query {
       data
     );
     return promise.then((data) => QueryParamsResponse.decode(new Reader(data)));
+  }
+
+  TxCounter(
+    request: QueryGetTxCounterRequest
+  ): Promise<QueryGetTxCounterResponse> {
+    const data = QueryGetTxCounterRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "mastervectormaster.lottery.lottery.Query",
+      "TxCounter",
+      data
+    );
+    return promise.then((data) =>
+      QueryGetTxCounterResponse.decode(new Reader(data))
+    );
   }
 }
 

@@ -16,12 +16,20 @@ export type LotteryMsgEnterLotteryResponse = object;
  */
 export type LotteryParams = object;
 
+export interface LotteryQueryGetTxCounterResponse {
+  TxCounter?: LotteryTxCounter;
+}
+
 /**
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
 export interface LotteryQueryParamsResponse {
   /** params holds all the parameters of this module. */
   params?: LotteryParams;
+}
+
+export interface LotteryTxCounter {
+  counter?: string;
 }
 
 export interface ProtobufAny {
@@ -242,6 +250,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   queryParams = (params: RequestParams = {}) =>
     this.request<LotteryQueryParamsResponse, RpcStatus>({
       path: `/mastervectormaster/lottery/lottery/params`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryTxCounter
+   * @summary Queries a TxCounter by index.
+   * @request GET:/mastervectormaster/lottery/lottery/tx_counter
+   */
+  queryTxCounter = (params: RequestParams = {}) =>
+    this.request<LotteryQueryGetTxCounterResponse, RpcStatus>({
+      path: `/mastervectormaster/lottery/lottery/tx_counter`,
       method: "GET",
       format: "json",
       ...params,

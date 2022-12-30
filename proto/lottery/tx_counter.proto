@@ -1,0 +1,9 @@
+syntax = "proto3";
+package mastervectormaster.lottery.lottery;
+
+option go_package = "github.com/mastervectormaster/lottery/x/lottery/types";
+
+message TxCounter {
+  string counter = 1; 
+  
+}

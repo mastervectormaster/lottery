@@ -1,13 +1,15 @@
 /* eslint-disable */
 import { Params } from "../lottery/params";
+import { TxCounter } from "../lottery/tx_counter";
 import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "mastervectormaster.lottery.lottery";
 
 /** GenesisState defines the lottery module's genesis state. */
 export interface GenesisState {
-  /** this line is used by starport scaffolding # genesis/proto/state */
   params: Params | undefined;
+  /** this line is used by starport scaffolding # genesis/proto/state */
+  txCounter: TxCounter | undefined;
 }
 
 const baseGenesisState: object = {};
@@ -16,6 +18,9 @@ export const GenesisState = {
   encode(message: GenesisState, writer: Writer = Writer.create()): Writer {
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.txCounter !== undefined) {
+      TxCounter.encode(message.txCounter, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -29,6 +34,9 @@ export const GenesisState = {
       switch (tag >>> 3) {
         case 1:
           message.params = Params.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.txCounter = TxCounter.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -45,6 +53,11 @@ export const GenesisState = {
     } else {
       message.params = undefined;
     }
+    if (object.txCounter !== undefined && object.txCounter !== null) {
+      message.txCounter = TxCounter.fromJSON(object.txCounter);
+    } else {
+      message.txCounter = undefined;
+    }
     return message;
   },
 
@@ -52,6 +65,10 @@ export const GenesisState = {
     const obj: any = {};
     message.params !== undefined &&
       (obj.params = message.params ? Params.toJSON(message.params) : undefined);
+    message.txCounter !== undefined &&
+      (obj.txCounter = message.txCounter
+        ? TxCounter.toJSON(message.txCounter)
+        : undefined);
     return obj;
   },
 
@@ -61,6 +78,11 @@ export const GenesisState = {
       message.params = Params.fromPartial(object.params);
     } else {
       message.params = undefined;
+    }
+    if (object.txCounter !== undefined && object.txCounter !== null) {
+      message.txCounter = TxCounter.fromPartial(object.txCounter);
+    } else {
+      message.txCounter = undefined;
     }
     return message;
   },
