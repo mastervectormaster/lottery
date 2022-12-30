@@ -1,19 +1,22 @@
 package keeper
 
 import (
-	"context"
 	"fmt"
+	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/mastervectormaster/lottery/app/config"
-	"github.com/mastervectormaster/lottery/x/lottery/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"github.com/tendermint/tendermint/crypto"
+	"github.com/mastervectormaster/lottery/app/constants"
+	"github.com/mastervectormaster/lottery/x/lottery/types"
 )
 
 func (k msgServer) EnterLottery(goCtx context.Context, msg *types.MsgEnterLottery) (*types.MsgEnterLotteryResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	fmt.Println(msg.GetSignBytes())
 
 	if msg == nil {
 		return nil, status.Error(codes.InvalidArgument, "Invalid Request")
@@ -28,11 +31,11 @@ func (k msgServer) EnterLottery(goCtx context.Context, msg *types.MsgEnterLotter
 	if err != nil {
 		panic(err)
 	}
-	requiredFee, err := sdk.ParseCoinNormalized(config.RequiredFee)
+	requiredFee, err := sdk.ParseCoinNormalized(constants.RequiredFee)
 	if err != nil {
 		panic(err)
 	}
-	minBet, err := sdk.ParseCoinNormalized(config.MinBetSize)
+	minBet, err := sdk.ParseCoinNormalized(constants.MinBetSize)
 	if err != nil {
 		panic(err)
 	}
@@ -60,18 +63,15 @@ func (k msgServer) EnterLottery(goCtx context.Context, msg *types.MsgEnterLotter
 
 	// add to user list
 	// only add when the user is not in the list
-	allUsers := k.GetAllUser(ctx)
-	fmt.Println(allUsers)
-	found = false
-	for _, user := range allUsers {
-		if user.User == msg.Creator {
-			found = true
-			break
-		}
-	}
-	if !found {
-		k.AppendUser(ctx, types.User {User: msg.Creator})
-	}
+	k.AppendUser(ctx, types.User {User: msg.Creator})
+
+	// send fee+bet to lottery pool
+	totalFee := sdk.NewCoins(fee.Add(bet))
+	lotteryPool := sdk.AccAddress(crypto.AddressHash([]byte(types.ModuleName)))
+	sdkError := k.bankKeeper.SendCoins(ctx, sdk.AccAddress(msg.Creator), lotteryPool, totalFee)
+    if sdkError != nil {
+        return nil, sdkError
+    }
 
 	return &types.MsgEnterLotteryResponse{}, nil
 }

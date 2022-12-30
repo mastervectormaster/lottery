@@ -33,12 +33,25 @@ func (k Keeper) SetUserCount(ctx sdk.Context, count uint64) {
 }
 
 // AppendUser appends a user in the store with a new id and update the count
+// only add when the user is not in the list
 func (k Keeper) AppendUser(
 	ctx sdk.Context,
 	user types.User,
 ) uint64 {
-	// Create the user
 	count := k.GetUserCount(ctx)
+	
+	allUsers := k.GetAllUser(ctx)
+	found := false
+	for _, _user := range allUsers {
+		if _user.User == user.User {
+			found = true
+			break
+		}
+	}
+
+	if found {
+		return count;
+	}
 
 	// Set the ID of the appended value
 	user.Id = count
@@ -75,6 +88,16 @@ func (k Keeper) GetUser(ctx sdk.Context, id uint64) (val types.User, found bool)
 func (k Keeper) RemoveUser(ctx sdk.Context, id uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UserKey))
 	store.Delete(GetUserIDBytes(id))
+}
+
+// RemoveAllUser empty out the store
+func (k Keeper) RemoveAllUser(ctx sdk.Context) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UserKey))
+	allUsers := k.GetAllUser(ctx)
+	for _, user := range allUsers {
+		store.Delete(GetUserIDBytes(user.Id))
+	}
+	k.SetUserCount(ctx, 0)
 }
 
 // GetAllUser returns all user
