@@ -8,9 +8,9 @@ DENOM="token"
 CHAIN_ID="lottery-12345_1"
 KEYRING_BACKEND="test"
 # BLOCK_TIME="5m0s"
-BLOCK_TIME="3s"
+BLOCK_TIME="30s"
 MONIKER="localtestnet"
-CLIENT_NUM=2
+CLIENT_NUM=20
 INITIAL_TOKEN_AMOUNT=500
 
 
@@ -39,7 +39,7 @@ for (( i=1; i<=CLIENT_NUM; i++ ))
 do
     echo "Creating Client $i"
     lotteryd keys add "client$i" 
-    lotteryd add-genesis-account $(lotteryd keys show "client$i" -a ) ${i}${DENOM}
+    lotteryd add-genesis-account $(lotteryd keys show "client$i" -a ) ${INITIAL_TOKEN_AMOUNT}${DENOM}
 done
 
 lotteryd gentx validator 50000000token --chain-id $CHAIN_ID
