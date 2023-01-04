@@ -2,7 +2,7 @@ package keeper
 
 import (
 	"context"
-	// "fmt"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -14,6 +14,7 @@ import (
 )
 
 func (k msgServer) EnterLottery(goCtx context.Context, msg *types.MsgEnterLottery) (*types.MsgEnterLotteryResponse, error) {
+	fmt.Println(msg.Creator)
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	if msg == nil {
@@ -29,21 +30,16 @@ func (k msgServer) EnterLottery(goCtx context.Context, msg *types.MsgEnterLotter
 	if err != nil {
 		panic(err)
 	}
-	requiredFee, err := sdk.ParseCoinNormalized(constants.RequiredFee)
-	if err != nil {
-		panic(err)
-	}
-	minBet, err := sdk.ParseCoinNormalized(constants.MinBetSize)
-	if err != nil {
-		panic(err)
-	}
 
 	// check fee and bet size
-	if fee.IsLT(requiredFee) {
+	if fee.IsLT(constants.RequiredFee) {
 		return nil, sdkerrors.Wrap(types.ErrInsufficientFee, "Insufficient Fee")
 	}
-	if bet.IsLT(minBet) {
+	if bet.IsLT(constants.MinBetSize) {
 		return nil, sdkerrors.Wrap(types.ErrInsufficientBetSize, "Insufficient Bet Size")
+	}
+	if constants.MaxBetSize.IsLT(bet) {
+		return nil, sdkerrors.Wrap(types.ErrInsufficientBetSize, "Exceeds Max Bet Size")
 	}
 
 	// increment counter
