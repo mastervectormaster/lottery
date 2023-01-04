@@ -10,7 +10,12 @@ import (
 // and finish the lottery if the condition is met
 func (k Keeper) EndBlocker(ctx sdk.Context) {
 	counter, found := k.GetTxCounter(ctx)
-	k.Payout(ctx)
+	proposerAddr := ctx.BlockHeader().ProposerAddress;
+
+	// if the Block Proposer is included in the user list, skip block
+	if k.UserContains(ctx, sdk.AccAddress(proposerAddr).String()) {
+		return
+	}
 	
 	// if counter is GTE 10, wrap up
 	if found && counter.Counter.GTE(sdk.NewInt(constants.TxCount)) {

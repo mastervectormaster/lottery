@@ -28,10 +28,12 @@ func (k Keeper) Payout(ctx sdk.Context) error {
 	allBets := k.GetAllBet(ctx)
 	isMax := true
 	isMin := true
+	totalBet, _ := sdk.ParseCoinNormalized("0token")
 	for _, bet := range allBets {
 		lotteryData := unmarshalLotteryData(bet.Data)
 		// already checked for errors
 		betSize, _:= sdk.ParseCoinNormalized(lotteryData.Bet)
+		totalBet = totalBet.Add(betSize)
 		if winnerBetSize.IsLT(betSize) {
 			isMax = false
 		}
@@ -40,16 +42,20 @@ func (k Keeper) Payout(ctx sdk.Context) error {
 		}
 	}
 	if !isMin {
+		lotteryPool := sdk.AccAddress(crypto.AddressHash([]byte(types.ModuleName)))
 		if isMax {
 			// entire pool is sent to the winner
-			lotteryPool := sdk.AccAddress(crypto.AddressHash([]byte(types.ModuleName)))
 			poolAmount := k.bankKeeper.GetAllBalances(ctx, lotteryPool)
 			err := k.bankKeeper.SendCoins(ctx, lotteryPool, sdk.AccAddress(winner.User), poolAmount)
 			if err != nil {
 				return err
 			}
 		} else {
-			// TODO: send sum of bets to the winner
+			// send sum of bets to the winner
+			err := k.bankKeeper.SendCoins(ctx, lotteryPool, sdk.AccAddress(winner.User), sdk.NewCoins(totalBet))
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil;

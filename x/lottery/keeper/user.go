@@ -40,14 +40,7 @@ func (k Keeper) AppendUser(
 ) uint64 {
 	count := k.GetUserCount(ctx)
 
-	allUsers := k.GetAllUser(ctx)
-	found := false
-	for _, _user := range allUsers {
-		if _user.User == user.User {
-			found = true
-			break
-		}
-	}
+	found := k.UserContains(ctx, user.User)
 
 	if !found {
 		// Set the ID of the appended value
@@ -124,4 +117,17 @@ func GetUserIDBytes(id uint64) []byte {
 // GetUserIDFromBytes returns ID in uint64 format from a byte array
 func GetUserIDFromBytes(bz []byte) uint64 {
 	return binary.BigEndian.Uint64(bz)
+}
+
+// Return true if the account address (string type) is included in the user list
+func (k Keeper) UserContains(ctx sdk.Context, addr string) (found bool){
+	allUsers := k.GetAllUser(ctx)
+	found = false
+	for _, _user := range allUsers {
+		if _user.User == addr {
+			found = true
+			break
+		}
+	}
+	return
 }
