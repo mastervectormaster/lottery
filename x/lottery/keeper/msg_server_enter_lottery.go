@@ -2,19 +2,17 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/mastervectormaster/lottery/app/constants"
 	"github.com/mastervectormaster/lottery/x/lottery/types"
-	// "github.com/tendermint/tendermint/crypto"
+	"github.com/tendermint/tendermint/crypto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 func (k msgServer) EnterLottery(goCtx context.Context, msg *types.MsgEnterLottery) (*types.MsgEnterLotteryResponse, error) {
-	fmt.Println(msg.Creator)
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	if msg == nil {
@@ -65,15 +63,14 @@ func (k msgServer) EnterLottery(goCtx context.Context, msg *types.MsgEnterLotter
 		Data: string(msg.GetSignBytes()),
 	})
 
-	// send fee+bet to lottery pool
-	// totalFee := sdk.NewCoins(fee.Add(bet))
-	// lotteryPool := sdk.AccAddress(crypto.AddressHash([]byte(types.ModuleName)))
-	// fmt.Println(msg.Creator)
-	// fmt.Println(k.bankKeeper.GetAllBalances(ctx, sdk.AccAddress(msg.Creator)))
-	// sdkError := k.bankKeeper.SendCoins(ctx, sdk.AccAddress(msg.Creator), lotteryPool, totalFee)
-	// if sdkError != nil {
-	// 	return nil, sdkError
-	// }
+	// send Fee + Bet to lottery pool
+	totalFee := sdk.NewCoins(fee.Add(bet))
+	lotteryPool := sdk.AccAddress(crypto.AddressHash([]byte(types.ModuleName)))
+	msgCreator, _ := sdk.AccAddressFromBech32(msg.Creator)
+	sdkError := k.bankKeeper.SendCoins(ctx, msgCreator, lotteryPool, totalFee)
+	if sdkError != nil {
+		return nil, sdkError
+	}
 
 	return &types.MsgEnterLotteryResponse{}, nil
 }

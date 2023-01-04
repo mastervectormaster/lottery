@@ -43,16 +43,17 @@ func (k Keeper) Payout(ctx sdk.Context) error {
 	}
 	if !isMin {
 		lotteryPool := sdk.AccAddress(crypto.AddressHash([]byte(types.ModuleName)))
+		winnerAccAddr, _ := sdk.AccAddressFromBech32(winner.User)
 		if isMax {
 			// entire pool is sent to the winner
 			poolAmount := k.bankKeeper.GetAllBalances(ctx, lotteryPool)
-			err := k.bankKeeper.SendCoins(ctx, lotteryPool, sdk.AccAddress(winner.User), poolAmount)
+			err := k.bankKeeper.SendCoins(ctx, lotteryPool, winnerAccAddr, poolAmount)
 			if err != nil {
 				return err
 			}
 		} else {
 			// send sum of bets to the winner
-			err := k.bankKeeper.SendCoins(ctx, lotteryPool, sdk.AccAddress(winner.User), sdk.NewCoins(totalBet))
+			err := k.bankKeeper.SendCoins(ctx, lotteryPool, winnerAccAddr, sdk.NewCoins(totalBet))
 			if err != nil {
 				return err
 			}
